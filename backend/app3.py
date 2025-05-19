@@ -46,6 +46,6 @@ def predict():
     predicted = np.argmax(preds, axis=1).tolist()
     confidences = (np.max(preds, axis=1) * 100).round(2).tolist()
     return jsonify({"predicted": predicted, "confidences": confidences})
-
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000)
+
