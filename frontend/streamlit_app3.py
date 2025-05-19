@@ -142,20 +142,36 @@ elif st.session_state.page == "game":
             st.warning("Draw something first.")
             st.stop()
 
-        try:
-            res = requests.post("https://digit-recognition-api-8r20.onrender.com", files={"file": io.BytesIO(img_bytes)})
-            result = res.json()
-        except Exception as e:
-            st.error(f"Prediction error: {e}")
-            speak_async("Sorry, I couldn't connect to the server.")
-            st.stop()
+       # Update API URL (add /predict)
+API_URL = "https://digit-recognition-api-8r20.onrender.com/predict"  # 👈 Fixed
 
-        if "error" in result:
-            st.error("❌ " + result["error"])
-            speak_async("Sorry, no digits found.")
-        else:
-            predicted_digits = result["predicted"]
-            confidences = result["confidences"]
+# In your prediction button code:
+try:
+    # Convert canvas to PNG properly
+    img = Image.fromarray(255 - canvas.image_data[:, :, 0].astype(np.uint8))
+    img_bytes_io = io.BytesIO()
+    img.save(img_bytes_io, format="PNG")
+    img_bytes = img_bytes_io.getvalue()
+    
+    # Add timeout and verify response
+    response = requests.post(
+        API_URL,
+        files={"file": ("drawing.png", img_bytes, "image/png")},  # 👈 Proper file upload
+        timeout=10
+    )
+    response.raise_for_status()  # Will raise error for bad status
+    result = response.json()
+    
+    if "error" in result:
+        st.error(f"API Error: {result['error']}")
+    else:
+        # Process successful response
+        predicted_digits = result["predicted"]
+        
+except requests.exceptions.RequestException as e:
+    st.error(f"Connection failed: {str(e)}")
+except ValueError:
+    st.error("Invalid response from server")
 
             predicted_number = "".join(str(d) for d in predicted_digits)
             st.markdown(f"✅ You drew: **{predicted_number}**")
