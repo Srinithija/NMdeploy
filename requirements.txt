@@ -1,0 +1,10 @@
+flask
+tensorflow
+numpy
+opencv-python
+pillow
+streamlit
+streamlit-drawable-canvas
+requests
+pyttsx3
+matplotlib
