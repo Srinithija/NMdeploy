@@ -143,7 +143,7 @@ elif st.session_state.page == "game":
             st.stop()
 
         try:
-            res = requests.post("https://your-flask-service.onrender.com/predict", files={"file": io.BytesIO(img_bytes)})
+            res = requests.post("https://digit-recognition-api-8r20.onrender.com", files={"file": io.BytesIO(img_bytes)})
             result = res.json()
         except Exception as e:
             st.error(f"Prediction error: {e}")
